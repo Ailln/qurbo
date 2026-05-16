@@ -31,7 +31,8 @@ subject to  A x + G y <= b
 ├── baseline/
 │   ├── baseline_miqp_qaoa.py   # QAOA-like MIQP baseline
 │   ├── bruteforce_check.py     # 小规模实例暴力枚举校验器
-│   └── run_base.sh             # baseline 运行示例
+│   ├── run_base.sh             # GPU baseline 运行示例
+│   └── run_base_cpu.sh         # CPU baseline 运行示例，适合 macOS 或无 CUDA 环境
 ├── data/
 │   └── alpha-test/
 │       ├── miqp_sample_A.npz   # 样例实例 A
@@ -55,6 +56,12 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
+默认依赖文件 `requirements.txt` 使用 GPU 版 Aer，适合有 NVIDIA CUDA 环境的机器。macOS 或没有 CUDA 的机器可以直接使用 CPU 版依赖：
+
+```bash
+python -m pip install -r requirements-cpu.txt
+```
+
 安装完成后可以检查核心依赖：
 
 ```bash
@@ -71,18 +78,36 @@ print("qiskit-aer", qiskit_aer.__version__)
 PY
 ```
 
-`qiskit-aer-gpu` 需要可用的 NVIDIA CUDA 环境，并且 CUDA/驱动版本需要与 wheel 兼容。在 macOS 或没有 CUDA 的机器上，GPU 后端通常不可用；此时请使用 `--device CPU`，并按本机环境安装兼容的 Aer CPU 包。
+`qiskit-aer-gpu` 需要可用的 NVIDIA CUDA 环境，并且 CUDA/驱动版本需要与 wheel 兼容。在 macOS 或没有 CUDA 的机器上，GPU 后端通常不可用；此时请安装 `requirements-cpu.txt` 并使用 `--device CPU`。
 
 ## 快速开始
 
-在仓库根目录运行：
+下面的运行命令默认从 `baseline/` 目录执行，因此样例数据路径使用 `../data/alpha-test/`。
+
+GPU 版本：
 
 ```bash
 conda activate qurbo
+cd baseline
 
-python baseline/baseline_miqp_qaoa.py \
-  --input data/alpha-test/miqp_sample_A.npz \
-  --output solution_A_baseline.npz \
+python baseline_miqp_qaoa.py \
+  --input ../data/alpha-test/miqp_sample_A.npz \
+  --output solution_A_gpu.npz \
+  --iterations 20 \
+  --sub-size 12 \
+  --shots 512 \
+  --device GPU
+```
+
+macOS 或无 CUDA 环境可以直接跑 CPU 版本：
+
+```bash
+conda activate qurbo
+cd baseline
+
+python baseline_miqp_qaoa.py \
+  --input ../data/alpha-test/miqp_sample_A.npz \
+  --output solution_A_cpu.npz \
   --iterations 20 \
   --sub-size 12 \
   --shots 512 \
@@ -132,7 +157,7 @@ python baseline/baseline_miqp_qaoa.py \
 python - <<'PY'
 import numpy as np
 
-path = "data/alpha-test/miqp_sample_A.npz"
+path = "../data/alpha-test/miqp_sample_A.npz"
 data = np.load(path)
 
 for key in data.files:
@@ -141,7 +166,7 @@ for key in data.files:
 PY
 ```
 
-也可以打开 `data/alpha-test/读取数据示例.ipynb` 交互式查看数据。
+也可以打开 `data/alpha-test/读取数据示例.ipynb` 交互式查看数据；从 `baseline/` 目录看，该文件路径是 `../data/alpha-test/读取数据示例.ipynb`。
 
 ## 输出解文件
 
@@ -160,7 +185,7 @@ baseline 会将结果保存为 `.npz` 文件，包含：
 python - <<'PY'
 import numpy as np
 
-sol = np.load("solution_A_baseline.npz")
+sol = np.load("solution_A_gpu.npz")
 print("feasible =", bool(sol["feasible"]))
 print("objective =", float(sol["objective"]))
 print("x =", sol["x"])
@@ -188,8 +213,10 @@ PY
 对于很小的实例，可以使用暴力枚举脚本校验 baseline 结果。脚本会枚举所有二元变量 `x`，并对每个 `x` 求解连续 LP 子问题。
 
 ```bash
-python baseline/bruteforce_check.py \
-  --input data/alpha-test/miqp_sample_A.npz
+cd baseline
+
+python bruteforce_check.py \
+  --input ../data/alpha-test/miqp_sample_A.npz
 ```
 
 脚本内置保护：当 `n > 25` 时会拒绝运行，避免指数级枚举耗时过长。
