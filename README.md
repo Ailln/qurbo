@@ -32,11 +32,14 @@ subject to  A x + G y <= b
 │   ├── baseline_miqp_qaoa.py   # QAOA-like MIQP baseline
 │   ├── baseline_miqp_qaoa_v2.py # 改进候选池与约束激活策略
 │   ├── baseline_miqp_qaoa_v3.py # LP 代理价值 + 聚类 subQUBO + 修复重启
+│   ├── baseline_v4/            # 混合 MIQP 求解器包化实现
 │   ├── bruteforce_check.py     # 小规模实例暴力枚举校验器
 │   ├── run_base.sh             # GPU baseline 运行示例
 │   ├── run_base_cpu.sh         # CPU baseline 运行示例，适合 macOS 或无 CUDA 环境
 │   ├── run_base_v3.sh          # GPU v3 运行示例
-│   └── run_base_v3_cpu.sh      # CPU v3 运行示例
+│   ├── run_base_v3_cpu.sh      # CPU v3 运行示例
+│   ├── run_base_v4.sh          # GPU v4 运行示例
+│   └── run_base_v4_cpu.sh      # CPU v4 运行示例
 ├── data/
 │   └── alpha-test/
 │       ├── miqp_sample_A.npz   # 样例实例 A
@@ -135,6 +138,18 @@ python baseline_miqp_qaoa_v3.py \
   --device CPU
 ```
 
+v4 版本是包化后的混合 MIQP 求解器，从仓库根目录执行：
+
+```bash
+conda activate qurbo
+
+python -m baseline.baseline_v4.run \
+  --instance data/alpha-test/miqp_sample_B.npz \
+  --output solution_B_v4_cpu.npz \
+  --time-limit 60 \
+  --device CPU
+```
+
 运行过程中会输出初始解、每轮迭代的候选解可行性和目标函数值，结束后生成一个 `.npz` 解文件。
 
 ## 命令行参数
@@ -154,6 +169,8 @@ python baseline_miqp_qaoa_v3.py \
 | `--seed` | `42` | 随机种子。 |
 
 `baseline/baseline_miqp_qaoa_v3.py` 额外支持 `--top-k`、`--candidate-pool`、`--random-candidates`、`--init-trials`、`--mixed-penalty-scale`、`--repair-steps`、`--stagnation-limit` 和 `--temperature`。v3 会将 LP 对偶/历史回归得到的连续子问题代理价值反馈到 subQUBO，并使用强耦合聚类变量块、不可行候选修复和精英重启来增强大规模实例的搜索稳定性。
+
+`baseline/baseline_v4/run.py` 支持 `--instance`、`--output`、`--time-limit`、`--max-qubits`、`--sa-only` 和 `--device`。v4 将读取实例、可行解生成、目标评估、subQUBO 构建、修复器、精英池、变量选择和求解器拆分为包内模块，可用 `python -m baseline.baseline_v4.run` 运行，评估脚本为 `python -m baseline.baseline_v4.evaluate`。
 
 ## 输入数据格式
 

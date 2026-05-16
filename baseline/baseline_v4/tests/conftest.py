@@ -2,11 +2,11 @@ import pytest
 import os
 import sys
 
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 sys.path.insert(0, PROJECT_ROOT)
 
-from algorithm.data.instance import MIQPInstance
-from algorithm.core.evaluator import ObjectiveEvaluator
+from baseline.baseline_v4.data.instance import MIQPInstance
+from baseline.baseline_v4.core.evaluator import ObjectiveEvaluator
 
 DATA_DIR = os.path.join(PROJECT_ROOT, 'data', 'alpha-test')
 

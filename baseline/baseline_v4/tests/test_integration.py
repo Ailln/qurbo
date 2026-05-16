@@ -2,15 +2,15 @@ import numpy as np
 import os
 import sys
 
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 sys.path.insert(0, PROJECT_ROOT)
 
 DATA_DIR = os.path.join(PROJECT_ROOT, 'data', 'alpha-test')
 
-from algorithm.data.instance import MIQPInstance
-from algorithm.core.evaluator import ObjectiveEvaluator
-from algorithm.config import auto_config
-from algorithm.solver import HybridMIQPSolver
+from baseline.baseline_v4.data.instance import MIQPInstance
+from baseline.baseline_v4.core.evaluator import ObjectiveEvaluator
+from baseline.baseline_v4.config import auto_config
+from baseline.baseline_v4.solver import HybridMIQPSolver
 
 
 class TestIntegration:

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""algorithm.run - 一键运行 MIQP 求解器。"""
+"""baseline_v4.run - 一键运行 MIQP 求解器。"""
 
 import argparse
 from pathlib import Path
@@ -8,11 +8,15 @@ import numpy as np
 
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-
-from algorithm.data.instance import MIQPInstance
-from algorithm.core.evaluator import ObjectiveEvaluator
-from algorithm.config import auto_config
-from algorithm.solver import HybridMIQPSolver
+    from baseline_v4.data.instance import MIQPInstance
+    from baseline_v4.core.evaluator import ObjectiveEvaluator
+    from baseline_v4.config import auto_config
+    from baseline_v4.solver import HybridMIQPSolver
+else:
+    from .data.instance import MIQPInstance
+    from .core.evaluator import ObjectiveEvaluator
+    from .config import auto_config
+    from .solver import HybridMIQPSolver
 
 
 def main():

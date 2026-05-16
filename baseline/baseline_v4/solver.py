@@ -6,9 +6,9 @@ import numpy as np
 from numpy import ndarray
 import time
 
-from algorithm.solvers.qaoa_solver import QAOASolver, QAOAConfig
-from algorithm.solvers.sa_solver import SimulatedAnnealingSolver, SAConfig
-from algorithm.solvers.exact_solver import ExactQUBOSolver, ExactSolverResult
+from .solvers.qaoa_solver import QAOASolver, QAOAConfig
+from .solvers.sa_solver import SimulatedAnnealingSolver, SAConfig
+from .solvers.exact_solver import ExactQUBOSolver, ExactSolverResult
 
 
 @dataclass
@@ -40,13 +40,13 @@ class HybridMIQPSolver:
         self.config = config
 
         # 初始化所有模块
-        from algorithm.core.evaluator import ObjectiveEvaluator
-        from algorithm.core.repairer import SolutionRepairer
-        from algorithm.core.elite_pool import ElitePool
-        from algorithm.core.cut_manager import BendersCutManager
-        from algorithm.core.init_generator import FeasibleSolutionGenerator
-        from algorithm.core.qubo_builder import SubQUBOBuilder
-        from algorithm.strategy.variable_selector import VariableSelector
+        from .core.evaluator import ObjectiveEvaluator
+        from .core.repairer import SolutionRepairer
+        from .core.elite_pool import ElitePool
+        from .core.cut_manager import BendersCutManager
+        from .core.init_generator import FeasibleSolutionGenerator
+        from .core.qubo_builder import SubQUBOBuilder
+        from .strategy.variable_selector import VariableSelector
 
         self.evaluator = ObjectiveEvaluator(instance)
         self.repairer = SolutionRepairer(self.evaluator)

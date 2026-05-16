@@ -2,7 +2,7 @@
 """统一评估脚本：对比多种求解方法的结果。
 
 用法:
-    python -m algorithm.evaluate --instance data/alpha-test/miqp_sample_A.npz \
+    python -m baseline.baseline_v4.evaluate --instance data/alpha-test/miqp_sample_A.npz \
         --sol path/to/solution_A.npz path/to/solution_B.npz
 
 输出:

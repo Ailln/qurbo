@@ -1,4 +1,4 @@
-# Algorithm
+# Baseline v4
 
 这里整合 `qurbo-fresh` 中新的混合 MIQP 求解器计算代码，不包含重复数据、实验解文件或报告产物。
 
@@ -17,15 +17,25 @@
 从仓库根目录执行：
 
 ```bash
-python -m algorithm.run \
+python -m baseline.baseline_v4.run \
   --instance data/alpha-test/miqp_sample_A.npz \
-  --output solution_A.npz \
+  --output solution_A_v4.npz \
   --time-limit 60 \
   --device CPU
 
-python -m algorithm.run \
+python -m baseline.baseline_v4.run \
   --instance data/alpha-test/miqp_sample_B.npz \
-  --output solution_B.npz \
+  --output solution_B_v4.npz \
+  --time-limit 60 \
+  --device CPU
+```
+
+也可以从 `baseline/` 目录执行：
+
+```bash
+python -m baseline_v4.run \
+  --instance ../data/alpha-test/miqp_sample_A.npz \
+  --output solution_A_v4.npz \
   --time-limit 60 \
   --device CPU
 ```
@@ -33,7 +43,7 @@ python -m algorithm.run \
 评估解文件：
 
 ```bash
-python -m algorithm.evaluate \
+python -m baseline.baseline_v4.evaluate \
   --instance data/alpha-test/miqp_sample_A.npz \
-  --sol solution_A.npz
+  --sol solution_A_v4.npz
 ```
