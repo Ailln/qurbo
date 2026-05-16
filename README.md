@@ -30,9 +30,13 @@ subject to  A x + G y <= b
 .
 ├── baseline/
 │   ├── baseline_miqp_qaoa.py   # QAOA-like MIQP baseline
+│   ├── baseline_miqp_qaoa_v2.py # 改进候选池与约束激活策略
+│   ├── baseline_miqp_qaoa_v3.py # LP 代理价值 + 聚类 subQUBO + 修复重启
 │   ├── bruteforce_check.py     # 小规模实例暴力枚举校验器
 │   ├── run_base.sh             # GPU baseline 运行示例
-│   └── run_base_cpu.sh         # CPU baseline 运行示例，适合 macOS 或无 CUDA 环境
+│   ├── run_base_cpu.sh         # CPU baseline 运行示例，适合 macOS 或无 CUDA 环境
+│   ├── run_base_v3.sh          # GPU v3 运行示例
+│   └── run_base_v3_cpu.sh      # CPU v3 运行示例
 ├── data/
 │   └── alpha-test/
 │       ├── miqp_sample_A.npz   # 样例实例 A
@@ -114,6 +118,23 @@ python baseline_miqp_qaoa.py \
   --device CPU
 ```
 
+v3 版本适合后续测试集和较大样例，仍然保证单次量子调用不超过 30 qubit：
+
+```bash
+conda activate qurbo
+cd baseline
+
+python baseline_miqp_qaoa_v3.py \
+  --input ../data/alpha-test/miqp_sample_B.npz \
+  --output solution_B_v3_cpu.npz \
+  --iterations 120 \
+  --sub-size 20 \
+  --shots 512 \
+  --top-k 30 \
+  --candidate-pool 30 \
+  --device CPU
+```
+
 运行过程中会输出初始解、每轮迭代的候选解可行性和目标函数值，结束后生成一个 `.npz` 解文件。
 
 ## 命令行参数
@@ -131,6 +152,8 @@ python baseline_miqp_qaoa.py \
 | `--penalty` | `10.0` | 约束罚项权重。 |
 | `--device` | `CPU` | AerSimulator 设备，可选 `CPU` 或 `GPU`。 |
 | `--seed` | `42` | 随机种子。 |
+
+`baseline/baseline_miqp_qaoa_v3.py` 额外支持 `--top-k`、`--candidate-pool`、`--random-candidates`、`--init-trials`、`--mixed-penalty-scale`、`--repair-steps`、`--stagnation-limit` 和 `--temperature`。v3 会将 LP 对偶/历史回归得到的连续子问题代理价值反馈到 subQUBO，并使用强耦合聚类变量块、不可行候选修复和精英重启来增强大规模实例的搜索稳定性。
 
 ## 输入数据格式
 
@@ -179,6 +202,8 @@ baseline 会将结果保存为 `.npz` 文件，包含：
 | `objective` | 目标函数值。 |
 | `feasible` | 当前解是否满足可行性检查。 |
 
+v2/v3 还会额外保存 `accepted_count`、`evaluated_count` 等统计信息；v3 进一步保存 `restart_count`、`lp_eval_count`、`repaired_candidate_count` 和 `best_trace`，便于复现实验和撰写算法说明。
+
 读取输出示例：
 
 ```bash
@@ -195,7 +220,7 @@ PY
 
 ## Baseline 方法概览
 
-`baseline_miqp_qaoa.py` 的流程如下：
+`baseline_miqp_qaoa.py` 的基础流程如下：
 
 1. 读取 MIQP 实例。
 2. 随机生成若干初始二元解，并通过 `scipy.optimize.linprog` 求连续变量 `y`。
@@ -207,6 +232,12 @@ PY
 8. 保存当前最好解。
 
 需要注意：这是 baseline 实现，主要用于提供一个可运行的参考流程。约束罚项、变量子集选择、QAOA 参数搜索和接受策略都可以继续改进。
+
+`baseline_miqp_qaoa_v3.py` 在此基础上做了三项主要升级：
+
+1. 固定 `x` 后仍用 `scipy.optimize.linprog` 精确求连续变量 `y`，但把 LP 对偶信息或历史样本回归得到的 recourse value 代理反馈到二元 subQUBO。
+2. 用 `Q` 的二次耦合、`A/B` 的共约束关系构造变量图，优先抽取强耦合聚类块作为量子子问题。
+3. 对量子采样候选先做有限步可行性修复，再进行 LP 回代评估；搜索停滞后从精英池扰动重启。
 
 ## 暴力枚举校验
 
