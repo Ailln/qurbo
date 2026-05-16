@@ -45,14 +45,14 @@ subject to  A x + G y <= b
 
 ## 环境安装
 
-推荐使用 conda 创建独立环境。下面的命令默认安装 CPU 版本，适合 macOS、Linux 和大多数本地开发环境。
+推荐使用 conda 创建独立环境。Qiskit 相关依赖需要使用指定版本，避免 Aer 后端和 Qiskit 主包版本不匹配。
 
 ```bash
 conda create -n qurbo python=3.11 -y
 conda activate qurbo
 
 python -m pip install --upgrade pip
-python -m pip install numpy scipy qiskit qiskit-aer jupyter
+python -m pip install -r requirements.txt
 ```
 
 安装完成后可以检查核心依赖：
@@ -71,7 +71,7 @@ print("qiskit-aer", qiskit_aer.__version__)
 PY
 ```
 
-如果需要使用 `--device GPU`，需要额外准备 NVIDIA CUDA 环境，并安装支持 GPU 的 Qiskit Aer。GPU 安装方式和 CUDA/驱动版本强相关；在 macOS 或没有 CUDA 的机器上请使用默认的 `--device CPU`。
+`qiskit-aer-gpu` 需要可用的 NVIDIA CUDA 环境，并且 CUDA/驱动版本需要与 wheel 兼容。在 macOS 或没有 CUDA 的机器上，GPU 后端通常不可用；此时请使用 `--device CPU`，并按本机环境安装兼容的 Aer CPU 包。
 
 ## 快速开始
 
