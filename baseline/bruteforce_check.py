@@ -53,7 +53,7 @@ def main():
     n = data["n"]
 
     if n > 25:
-        raise ValueError("n 太大，不建议暴力枚举。")
+        raise ValueError(f"n: {n} 太大，不建议暴力枚举。")
 
     best_x = None
     best_y = None
