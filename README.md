@@ -1,4 +1,4 @@
-# QURBO
+# QURBO = Quantum + UQ + Robust Optimization
 
 QURBO 是一个面向混合整数二次规划（MIQP, Mixed-Integer Quadratic Programming）的量子优化实验仓库。当前版本提供了数据读取示例、alpha 测试样例数据，以及一个基于 Qiskit Aer 的 QAOA-like baseline，用于快速验证问题格式、跑通求解流程并生成可提交/可分析的解文件。
 
@@ -37,7 +37,7 @@ subject to  A x + G y <= b
 │       ├── miqp_sample_A.npz   # 样例实例 A
 │       ├── miqp_sample_B.npz   # 样例实例 B
 │       └── 读取数据示例.ipynb   # NPZ 数据读取示例
-├── docs/
+├── doc/
 │   └── 2026量子计算大赛·混合整数优化问题赛道.docx
 ├── LICENSE
 └── README.md
