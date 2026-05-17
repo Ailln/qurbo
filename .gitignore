@@ -222,3 +222,5 @@ __marimo__/
 
 # Baseline solution outputs
 solution*.npz
+*.zip
+*.log

@@ -1,0 +1,5 @@
+numpy
+scipy
+jupyter
+qiskit==1.4.3
+qiskit-aer-gpu==0.15.1
